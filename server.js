@@ -22,3 +22,5 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 app.get("/", (req, res) => {
   res.send("Suriyawan Saffari backend is working ✅");
 });
+const ownerRoutes = require('./routes/ownerRoutes');
+app.use('/api/owner', ownerRoutes);
