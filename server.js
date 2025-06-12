@@ -1,4 +1,3 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -13,14 +12,18 @@ app.use(express.json());
 const ownerRoutes = require('./routes/ownerRoutes');
 app.use('/api/owner', ownerRoutes);
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB connected'))
+.catch((err) => console.error('❌ MongoDB connection error:', err));
+
+// Health Check Route
+app.get('/', (req, res) => {
+  res.send('✅ Suriyawan Saffari backend is working');
+});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-app.get("/", (req, res) => {
-  res.send("Suriyawan Saffari backend is working ✅");
-});
-const ownerRoutes = require('./routes/ownerRoutes');
-app.use('/api/owner', ownerRoutes);
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
