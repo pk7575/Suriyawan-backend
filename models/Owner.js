@@ -7,3 +7,12 @@ const ownerSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Owner', ownerSchema);
+// models/Owner.js
+const mongoose = require('mongoose');
+
+const ownerSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }
+});
+
+module.exports = mongoose.model('Owner', ownerSchema);
