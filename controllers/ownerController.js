@@ -4,7 +4,7 @@ const loginOwner = (req, res) => {
   const { username, password } = req.body;
 
   // ✅ Update this to your actual credentials
-  if (username === "pradeepseth646" && password === "gjdzdhjbn") {
+  if (username === "pradeepseth646" && password === "bdRjmufQpjXigKGB") {
     const token = jwt.sign({ username }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
