@@ -1,11 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { loginOwner, getOwnerStats } = require("../controllers/ownerController");
+const { loginOwner } = require('../controllers/ownerController');
 
-// Owner login route
-router.post("/login", loginOwner);
+// POST: /api/owner/login
+router.post('/login', loginOwner);
 
-// Dashboard stats route
-router.get("/stats", getOwnerStats);
+// GET: /api/owner/ping — to test connection
+router.get('/ping', (req, res) => {
+  res.json({ message: '✅ Owner route is working!' });
+});
 
 module.exports = router;
