@@ -1,24 +1,18 @@
-const Owner = require('../models/Owner');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken";
+import Owner from "../models/Owner.js";
 
-exports.loginOwner = async (req, res) => {
+export const loginOwner = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const owner = await Owner.findOne({ email });
-    if (!owner) return res.status(404).json({ message: 'Owner not found' });
+    if (!owner || owner.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-    const isMatch = await bcrypt.compare(password, owner.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid password' });
-
-    const token = jwt.sign({ ownerId: owner._id }, process.env.JWT_SECRET, {
-      expiresIn: '2h',
-    });
-
-    res.status(200).json({ message: 'Login successful', token });
+    const token = jwt.sign({ id: owner._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    res.json({ token });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
