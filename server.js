@@ -24,3 +24,24 @@ app.use("/api/owner", ownerRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const express = require("express");
+const app = express();
+const cors = require("cors");
+require("dotenv").config();
+const ownerRoutes = require("./routes/owner"); // ✅ Route import
+
+app.use(cors());
+app.use(express.json());
+
+// Route use
+app.use("/api/owner", ownerRoutes); // ✅ Login API
+
+// Root Test
+app.get("/", (req, res) => {
+  res.send("Suriyawan Backend is running ✅");
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
