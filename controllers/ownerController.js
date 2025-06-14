@@ -35,3 +35,23 @@ const ping = (req, res) => {
 };
 
 module.exports = { loginOwner, getDashboardStats, ping };
+const getOwnerStats = async (req, res) => {
+  try {
+    // Dummy static data for testing
+    const stats = {
+      orders: 124,
+      revenue: 57240,
+      deliveryBoys: 5,
+      sellers: 12
+    };
+
+    res.json(stats);
+  } catch (err) {
+    console.error('Stats error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+module.exports = {
+  getOwnerStats
+};
