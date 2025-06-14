@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-// 🧑 Dummy Owner Login (changeable later)
+// 🧑 Dummy Owner Login Info
 const DUMMY_OWNER = {
   username: 'pradeepseth646',
-  password: '6cmi97KP9MDBzr7' // ✅ Your given password
+  password: '6cmi97KP9MDBzr7' // ✅ Your actual password
 };
 
 // 🔐 POST /api/owner/login
@@ -13,44 +13,29 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (username === DUMMY_OWNER.username && password === DUMMY_OWNER.password) {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return res.json({ success: true, token });
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    return res.json({
+      success: true,
+      message: '✅ लॉगिन सफल!',
+      token
+    });
   } else {
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    return res.status(401).json({
+      success: false,
+      message: '❌ अमान्य क्रेडेंशियल्स!'
+    });
   }
 });
 
-// ✅ GET /api/owner/ping — Backend status check
-router.get('/ping', (req, res) => {
-  res.json({ success: true, message: '✅ Owner API Active & Connected!' });
-});
-
-module.exports = router;
-const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
-
-// 🔒 Ping Route (Keep this)
+// ✅ GET /api/owner/ping — Backend Health Check
 router.get('/ping', (req, res) => {
   res.json({
     success: true,
-    message: '✅ Owner API Active & Connected!',
+    message: '✅ Owner API Active & Connected!'
   });
 });
 
-// 🔐 Login Route (Keep this)
-router.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  if (username === 'pradeepseth646' && password === '12345') {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '2h' });
-    return res.json({ success: true, message: 'Login successful', token });
-  } else {
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
-  }
-});
-
-// ✅ New Middleware
+// ✅ JWT Auth Middleware
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -63,16 +48,17 @@ const authMiddleware = (req, res, next) => {
   });
 };
 
-// ✅ New Route: Owner Stats (Dashboard Data)
-router.get('/stats', authMiddleware, async (req, res) => {
+// ✅ GET /api/owner/stats — Dashboard Data (Secure Route)
+router.get('/stats', authMiddleware, (req, res) => {
   try {
-    const data = {
+    const dashboardData = {
+      success: true,
       orders: 120,
       revenue: "₹34,000",
       deliveryBoys: 7,
       sellers: 15
     };
-    res.json(data);
+    res.json(dashboardData);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
