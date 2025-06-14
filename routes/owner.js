@@ -2,18 +2,20 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-// 🧑 Dummy Owner Login Info
+// 🔐 Dummy Owner Credentials
 const DUMMY_OWNER = {
   username: 'pradeepseth646',
-  password: '6cmi97KP9MDBzr7' // ✅ Your actual password
+  password: '6cmi97KP9MDBzr7'  // ✅ Your real password
 };
 
-// 🔐 POST /api/owner/login
+// ✅ POST /api/owner/login — Owner Login
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (username === DUMMY_OWNER.username && password === DUMMY_OWNER.password) {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    const token = jwt.sign({ username }, process.env.JWT_SECRET || 'defaultsecret', {
+      expiresIn: '2h'
+    });
     return res.json({
       success: true,
       message: '✅ लॉगिन सफल!',
@@ -35,20 +37,24 @@ router.get('/ping', (req, res) => {
   });
 });
 
-// ✅ JWT Auth Middleware
+// 🔒 JWT Token Middleware
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: "Token missing" });
+  const token = authHeader?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ success: false, message: "🔒 Token missing" });
+  }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
+  jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret', (err, user) => {
+    if (err) {
+      return res.status(403).json({ success: false, message: "❌ Invalid token" });
+    }
     req.user = user;
     next();
   });
 };
 
-// ✅ GET /api/owner/stats — Dashboard Data (Secure Route)
+// ✅ GET /api/owner/stats — Protected Dashboard Data
 router.get('/stats', authMiddleware, (req, res) => {
   try {
     const dashboardData = {
@@ -60,7 +66,7 @@ router.get('/stats', authMiddleware, (req, res) => {
     };
     res.json(dashboardData);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "⚠️ Server error" });
   }
 });
 
