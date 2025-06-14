@@ -1,7 +1,9 @@
 const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const ownerRoutes = require('./routes/owner');
+const sellerRoutes = require('./routes/seller'); // ✅ NEW: Seller route import
 
 dotenv.config();
 
@@ -11,6 +13,9 @@ app.use(express.json());
 
 // ✅ Route: /api/owner
 app.use('/api/owner', ownerRoutes);
+
+// ✅ Route: /api/seller
+app.use('/api/seller', sellerRoutes); // ✅ NEW: Seller route added
 
 // Optional root check
 app.get('/', (req, res) => {
