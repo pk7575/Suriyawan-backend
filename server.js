@@ -1,5 +1,4 @@
 const express = require('express');
-const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const ownerRoutes = require('./routes/owner');
@@ -17,11 +16,12 @@ app.use('/api/owner', ownerRoutes);
 // ✅ Route: /api/seller
 app.use('/api/seller', sellerRoutes); // ✅ NEW: Seller route added
 
-// Optional root check
+// ✅ Optional root health check
 app.get('/', (req, res) => {
   res.send('🚀 Suriyawan Backend Working');
 });
 
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
