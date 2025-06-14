@@ -2,54 +2,56 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-// 🧑 Dummy Seller Credentials
-const DUMMY_SELLER = {
-  username: 'seller001',
-  password: 'pass1234'
-};
+// Dummy seller data (database ke jagah abhi temporary data)
+const SELLER_USERNAME = "seller2025";
+const SELLER_PASSWORD = "123456";
+const JWT_SECRET = process.env.JWT_SECRET || "suriyawan_secret";
 
-// 🟢 Login Route
+// ✅ Route: POST /api/seller/login
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
-  if (username === DUMMY_SELLER.username && password === DUMMY_SELLER.password) {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '2h' });
-    res.json({ success: true, token, message: '✅ Seller Login Successful!' });
+
+  if (username === SELLER_USERNAME && password === SELLER_PASSWORD) {
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '2h' });
+    return res.status(200).json({
+      success: true,
+      message: "✅ लॉगिन सफल (Seller)",
+      token
+    });
   } else {
-    res.status(401).json({ success: false, message: '❌ Invalid credentials' });
+    return res.status(401).json({
+      success: false,
+      message: "❌ अमान्य लॉगिन विवरण (Seller)"
+    });
   }
 });
 
-// 🟢 Auth Middleware
-const sellerAuth = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: "Token missing" });
+// ✅ Middleware to verify token
+const verifySeller = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader)
+    return res.status(403).json({ success: false, message: "🔒 Token missing" });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-    req.user = user;
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.seller = decoded;
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ success: false, message: "⛔ Invalid Token" });
+  }
 };
 
-// 🟢 Product Upload (Dummy)
-let products = [];
-
-router.post('/products', sellerAuth, (req, res) => {
-  const { title, price, description, image } = req.body;
-  const newProduct = { title, price, description, image, seller: req.user.username };
-  products.push(newProduct);
-  res.json({ success: true, message: '✅ Product uploaded', product: newProduct });
-});
-
-// 🟢 Dashboard Stats
-router.get('/dashboard', sellerAuth, (req, res) => {
-  const sellerProducts = products.filter(p => p.seller === req.user.username);
-  res.json({
+// ✅ Route: GET /api/seller/dashboard (Protected)
+router.get('/dashboard', verifySeller, (req, res) => {
+  return res.status(200).json({
     success: true,
-    totalProducts: sellerProducts.length,
-    totalValue: '₹' + sellerProducts.reduce((sum, p) => sum + parseFloat(p.price || 0), 0),
-    products: sellerProducts
+    message: "📊 Seller Dashboard Connected",
+    stats: {
+      productsListed: 24,
+      ordersReceived: 51,
+      totalRevenue: "₹18,500"
+    }
   });
 });
 
