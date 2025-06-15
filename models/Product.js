@@ -6,12 +6,54 @@ const productSchema = new mongoose.Schema({
     ref: 'Seller',
     required: true
   },
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  description: { type: String, default: "No description provided" },
-  category: { type: String, default: "General" },           // Optional (for future filtering)
-  stock: { type: Number, default: 100 },                    // For inventory (D24 future)
-  image: { type: String, default: "" },                     // Product image URL (optional)
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  description: {
+    type: String,
+    default: "No description provided"
+  },
+  category: {
+    type: String,
+    default: "General"
+  },
+  stock: {
+    type: Number,
+    default: 100
+  },
+  image: {
+    type: String,
+    default: ""
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  orders: [
+    {
+      customerName: String,
+      customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+      address: String,
+      phone: String,
+      quantity: Number,
+      status: {
+        type: String,
+        enum: ['Pending', 'Delivered', 'Cancelled'],
+        default: 'Pending'
+      },
+      orderedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now
