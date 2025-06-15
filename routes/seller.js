@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ➕ Add Product Route
+// ➕ Add Product
 router.post('/product', verifySeller, async (req, res) => {
   try {
     const { name, price, description } = req.body;
@@ -62,10 +62,37 @@ router.get('/products', verifySeller, async (req, res) => {
   }
 });
 
+// ✏️ Update Product
+router.put('/product/:id', verifySeller, async (req, res) => {
+  try {
+    const { name, price, description } = req.body;
+    const updated = await Product.findOneAndUpdate(
+      { _id: req.params.id, seller: req.sellerId },
+      { name, price, description },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ success: false, message: "Product not found" });
+    res.json({ success: true, message: "Product updated", product: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error updating product" });
+  }
+});
+
+// ❌ Delete Product
+router.delete('/product/:id', verifySeller, async (req, res) => {
+  try {
+    const deleted = await Product.findOneAndDelete({ _id: req.params.id, seller: req.sellerId });
+    if (!deleted) return res.status(404).json({ success: false, message: "Product not found" });
+    res.json({ success: true, message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error deleting product" });
+  }
+});
+
 // 🧑‍💼 Get Seller Profile
 router.get('/profile', verifySeller, async (req, res) => {
   try {
-    const seller = await Seller.findById(req.sellerId).select('-password'); // Hide password
+    const seller = await Seller.findById(req.sellerId).select('-password');
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
     }
