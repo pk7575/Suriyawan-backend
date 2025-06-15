@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 // ✅ Middleware setup
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // ✅ Connect to MongoDB
@@ -25,12 +25,14 @@ mongoose.connect(process.env.MONGO_URI, {
 // ✅ Load routes
 const ownerRoutes = require('./routes/owner');
 const sellerRoutes = require('./routes/seller');
-const deliveryRoutes = require('./routes/delivery'); // New
+const deliveryRoutes = require('./routes/delivery');
+const customerRoutes = require('./routes/customer'); // ✅ NEW
 
 // ✅ Route setup
 app.use('/api/owner', ownerRoutes);
 app.use('/api/seller', sellerRoutes);
-app.use('/api/delivery', deliveryRoutes); // New
+app.use('/api/delivery', deliveryRoutes);
+app.use('/api/customer', customerRoutes); // ✅ NEW
 
 // ✅ Health Check
 app.get('/', (req, res) => {
