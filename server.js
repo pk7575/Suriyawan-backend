@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const path = require('path'); // 🆕 for serving uploads
 
 // ✅ Load environment variables
 dotenv.config();
@@ -26,13 +27,19 @@ mongoose.connect(process.env.MONGO_URI, {
 const ownerRoutes = require('./routes/owner');
 const sellerRoutes = require('./routes/seller');
 const deliveryRoutes = require('./routes/delivery');
-const customerRoutes = require('./routes/customer'); // ✅ NEW
+const customerRoutes = require('./routes/customer');
+const uploadRoutes = require('./routes/uploadRoutes'); // 🆕 Upload Route
 
 // ✅ Route setup
 app.use('/api/owner', ownerRoutes);
 app.use('/api/seller', sellerRoutes);
 app.use('/api/delivery', deliveryRoutes);
-app.use('/api/customer', customerRoutes); // ✅ NEW
+app.use('/api/customer', customerRoutes);
+app.use('/api', uploadRoutes); // 🆕 upload route active
+
+// ✅ Serve uploaded images publicly
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // 🆕
+
 
 // ✅ Health Check
 app.get('/', (req, res) => {
