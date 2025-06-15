@@ -8,7 +8,10 @@ const productSchema = new mongoose.Schema({
   },
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  description: { type: String },
+  description: { type: String, default: "No description provided" },
+  category: { type: String, default: "General" },           // Optional (for future filtering)
+  stock: { type: Number, default: 100 },                    // For inventory (D24 future)
+  image: { type: String, default: "" },                     // Product image URL (optional)
   createdAt: {
     type: Date,
     default: Date.now
