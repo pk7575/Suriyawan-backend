@@ -1,15 +1,30 @@
-const jwt = require("jsonwebtoken");
-const DeliveryBoy = require("../models/DeliveryBoy");
+const express = require('express');
+const router = express.Router();
+const {
+  sellerRegister,
+  sellerLogin,
+  customerRegister,
+  customerLogin,
+  deliveryBoyRegister,
+  deliveryBoyLogin
+} = require('../controllers/authController');
 
-module.exports = async (req, res, next) => {
-  const token = req.headers.authorization;
-  if (!token) return res.status(401).json({ success: false, message: "No token" });
+// -------------------------
+// 📦 Seller Auth Routes
+// -------------------------
+router.post('/seller/register', sellerRegister);
+router.post('/seller/login', sellerLogin);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await DeliveryBoy.findById(decoded.id);
-    next();
-  } catch (err) {
-    res.status(401).json({ success: false, message: "Invalid token" });
-  }
-};
+// -------------------------
+// 🛍️ Customer Auth Routes
+// -------------------------
+router.post('/customer/register', customerRegister);
+router.post('/customer/login', customerLogin);
+
+// -------------------------
+// 🚚 Delivery Boy Auth Routes
+// -------------------------
+router.post('/delivery/register', deliveryBoyRegister);
+router.post('/delivery/login', deliveryBoyLogin);
+
+module.exports = router;
