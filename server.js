@@ -5,23 +5,21 @@ const dotenv = require('dotenv');
 
 // ✅ Load routes
 const ownerRoutes = require('./routes/owner');
-const sellerRoutes = require('./routes/seller'); // Seller route
+const sellerRoutes = require('./routes/seller');
 
-// ✅ Configure environment
+// ✅ Load environment variables
 dotenv.config();
 
 // ✅ Initialize express app
 const app = express();
-
-// ✅ Middleware setup
 app.use(cors());
 app.use(express.json());
 
-// ✅ Routes
+// ✅ API Routes
 app.use('/api/owner', ownerRoutes);
 app.use('/api/seller', sellerRoutes);
 
-// ✅ Root health route
+// ✅ Health Check
 app.get('/', (req, res) => {
   res.send('🚀 Suriyawan Backend Working');
 });
