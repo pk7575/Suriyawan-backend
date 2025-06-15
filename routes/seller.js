@@ -103,3 +103,33 @@ router.get('/profile', verifySeller, async (req, res) => {
 });
 
 module.exports = router;
+// 📝 Update Product by ID
+router.put('/product/:id', verifySeller, async (req, res) => {
+  try {
+    const { name, price, description } = req.body;
+    const updated = await Product.findOneAndUpdate(
+      { _id: req.params.id, seller: req.sellerId },
+      { name, price, description },
+      { new: true }
+    );
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Product not found or unauthorized" });
+    }
+    res.json({ success: true, message: "Product updated", product: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error updating product" });
+  }
+});
+
+// ❌ Delete Product by ID
+router.delete('/product/:id', verifySeller, async (req, res) => {
+  try {
+    const deleted = await Product.findOneAndDelete({ _id: req.params.id, seller: req.sellerId });
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: "Product not found or unauthorized" });
+    }
+    res.json({ success: true, message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error deleting product" });
+  }
+});
