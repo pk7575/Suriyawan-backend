@@ -1,22 +1,27 @@
+// ✅ Load required modules
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const ownerRoutes = require('./routes/owner');
-const sellerRoutes = require('./routes/seller'); // ✅ NEW: Seller route import
 
+// ✅ Load routes
+const ownerRoutes = require('./routes/owner');
+const sellerRoutes = require('./routes/seller'); // Seller route
+
+// ✅ Configure environment
 dotenv.config();
 
+// ✅ Initialize express app
 const app = express();
+
+// ✅ Middleware setup
 app.use(cors());
 app.use(express.json());
 
-// ✅ Route: /api/owner
+// ✅ Routes
 app.use('/api/owner', ownerRoutes);
+app.use('/api/seller', sellerRoutes);
 
-// ✅ Route: /api/seller
-app.use('/api/seller', sellerRoutes); // ✅ NEW: Seller route added
-
-// ✅ Optional root health check
+// ✅ Root health route
 app.get('/', (req, res) => {
   res.send('🚀 Suriyawan Backend Working');
 });
