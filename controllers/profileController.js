@@ -1,44 +1,70 @@
 const Seller = require("../models/Seller");
+const Customer = require("../models/Customer");
+const DeliveryBoy = require("../models/DeliveryBoy");
 const bcrypt = require("bcryptjs");
 
-// 👤 Get Seller Profile
+// ✅ GET PROFILE
 exports.getProfile = async (req, res) => {
   try {
-    const sellerId = req.user.id;
-    const seller = await Seller.findById(sellerId).select("-password"); // Password ko chhupa rahe hain
+    const userType = req.user.role;
+    const userId = req.user.id;
 
-    if (!seller) {
-      return res.status(404).json({ success: false, message: "Seller not found." });
+    let user = null;
+
+    if (userType === "seller") {
+      user = await Seller.findById(userId).select("-password");
+    } else if (userType === "customer") {
+      user = await Customer.findById(userId).select("-password");
+    } else if (userType === "delivery") {
+      user = await DeliveryBoy.findById(userId).select("-password");
     }
 
-    res.status(200).json({ success: true, seller });
+    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+
+    res.status(200).json({ success: true, user });
   } catch (err) {
     console.error("Get Profile Error:", err.message);
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
-// 🛠️ Update Seller Profile
+// ✅ UPDATE PROFILE
 exports.updateProfile = async (req, res) => {
   try {
-    const sellerId = req.user.id;
-    const { category, pincode, password } = req.body;
+    const userType = req.user.role;
+    const userId = req.user.id;
+    const { category, pincode, password, name, phone, address } = req.body;
 
-    const updateData = {};
+    let model = null;
+    const updates = {};
 
-    if (category) updateData.category = category;
-    if (pincode) updateData.pincode = pincode;
     if (password) {
       const salt = await bcrypt.genSalt(10);
-      updateData.password = await bcrypt.hash(password, salt);
+      updates.password = await bcrypt.hash(password, salt);
     }
 
-    const updatedSeller = await Seller.findByIdAndUpdate(sellerId, updateData, {
+    // Common updates
+    if (category) updates.category = category;
+    if (pincode) updates.pincode = pincode;
+    if (name) updates.name = name;
+    if (phone) updates.phone = phone;
+    if (address) updates.address = address;
+
+    // Model assignment based on role
+    if (userType === "seller") model = Seller;
+    else if (userType === "customer") model = Customer;
+    else if (userType === "delivery") model = DeliveryBoy;
+
+    if (!model) return res.status(400).json({ success: false, message: "Invalid user role." });
+
+    const updatedUser = await model.findByIdAndUpdate(userId, updates, {
       new: true,
       runValidators: true
     }).select("-password");
 
-    res.status(200).json({ success: true, seller: updatedSeller });
+    if (!updatedUser) return res.status(404).json({ success: false, message: "User not found." });
+
+    res.status(200).json({ success: true, user: updatedUser });
   } catch (err) {
     console.error("Update Profile Error:", err.message);
     res.status(500).json({ success: false, message: "Server error." });
