@@ -1,26 +1,63 @@
 const express = require('express');
 const router = express.Router();
-const { sellerLogin, sellerRegister, sellerProfile, updateSeller } = require('../controllers/sellerController');
-const { deliveryLogin, deliveryRegister, deliveryProfile, updateDelivery } = require('../controllers/deliveryController');
-const { customerLogin, customerRegister, customerProfile, updateCustomer } = require('../controllers/customerController');
-const { verifyToken } = require('../middlewares/authMiddleware');
 
-// Seller Routes
+// Controllers
+const {
+  sellerLogin,
+  sellerRegister,
+  sellerProfile,
+  updateSeller
+} = require('../controllers/sellerController');
+
+const {
+  deliveryLogin,
+  deliveryRegister,
+  deliveryProfile,
+  updateDelivery
+} = require('../controllers/deliveryController');
+
+const {
+  customerLogin,
+  customerRegister,
+  customerProfile,
+  updateCustomer
+} = require('../controllers/customerController');
+
+const {
+  ownerLogin,
+  ownerProfile,
+  updateOwner
+} = require('../controllers/ownerController'); // Optional if owner profile control is needed
+
+// Auth Middlewares
+const {
+  verifySeller,
+  verifyCustomer,
+  verifyDeliveryBoy,
+  verifyOwner // Optional if used
+} = require('../middlewares/auth');
+
+// 📦 Seller Routes
 router.post('/seller/register', sellerRegister);
 router.post('/seller/login', sellerLogin);
-router.get('/seller/profile', verifyToken, sellerProfile);
-router.put('/seller/profile', verifyToken, updateSeller);
+router.get('/seller/profile', verifySeller, sellerProfile);
+router.put('/seller/profile', verifySeller, updateSeller);
 
-// Delivery Boy Routes
+// 🚚 Delivery Boy Routes
 router.post('/delivery/register', deliveryRegister);
 router.post('/delivery/login', deliveryLogin);
-router.get('/delivery/profile', verifyToken, deliveryProfile);
-router.put('/delivery/profile', verifyToken, updateDelivery);
+router.get('/delivery/profile', verifyDeliveryBoy, deliveryProfile);
+router.put('/delivery/profile', verifyDeliveryBoy, updateDelivery);
 
-// Customer Routes
+// 👥 Customer Routes
 router.post('/customer/register', customerRegister);
 router.post('/customer/login', customerLogin);
-router.get('/customer/profile', verifyToken, customerProfile);
-router.put('/customer/profile', verifyToken, updateCustomer);
+router.get('/customer/profile', verifyCustomer, customerProfile);
+router.put('/customer/profile', verifyCustomer, updateCustomer);
+
+// 👑 Owner Routes (Optional - Use if Owner dashboard has profile features)
+router.post('/owner/login', ownerLogin);
+router.get('/owner/profile', verifyOwner, ownerProfile);
+router.put('/owner/profile', verifyOwner, updateOwner);
 
 module.exports = router;
