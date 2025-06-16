@@ -1,13 +1,31 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) return res.status(401).json({ message: 'Token missing' });
+// 📌 Generic Token Verifier (adds req.user with { id, role })
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
 
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, process.env.JWT_SECRET || 'secretkey', (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
-    req.user = user;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ success: false, message: "🔒 Token missing or malformed" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "yourFallbackSecret");
+    if (!decoded || !decoded.id || !decoded.role) {
+      return res.status(403).json({ success: false, message: "⛔ Invalid token payload" });
+    }
+
+    // ✅ Inject decoded data into request
+    req.user = {
+      id: decoded.id,
+      role: decoded.role
+    };
+
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ success: false, message: "❌ Token invalid or expired", error: err.message });
+  }
 };
+
+module.exports = verifyToken;
