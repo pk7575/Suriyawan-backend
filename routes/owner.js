@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const verifyToken = require('../middlewares/verifyToken');
 
-// 🔐 Dummy Owner Credentials
+// 🧑‍💼 Dummy Owner Credentials (can move to DB later)
 const DUMMY_OWNER = {
   username: 'pradeepseth646',
-  password: '6cmi97KP9MDBzr7'  // ✅ Your real password
+  password: '6cmi97KP9MDBzr7' // ✅ Static Auth Password
 };
 
 // ✅ POST /api/owner/login — Owner Login
@@ -13,23 +14,26 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (username === DUMMY_OWNER.username && password === DUMMY_OWNER.password) {
-    const token = jwt.sign({ username }, process.env.JWT_SECRET || 'defaultsecret', {
-      expiresIn: '2h'
-    });
+    const token = jwt.sign(
+      { role: 'owner', username },
+      process.env.JWT_SECRET || 'defaultsecret',
+      { expiresIn: '2h' }
+    );
+
     return res.json({
       success: true,
       message: '✅ लॉगिन सफल!',
       token
     });
-  } else {
-    return res.status(401).json({
-      success: false,
-      message: '❌ अमान्य क्रेडेंशियल्स!'
-    });
   }
+
+  return res.status(401).json({
+    success: false,
+    message: '❌ अमान्य क्रेडेंशियल्स!'
+  });
 });
 
-// ✅ GET /api/owner/ping — Backend Health Check
+// ✅ GET /api/owner/ping — Health Check
 router.get('/ping', (req, res) => {
   res.json({
     success: true,
@@ -37,26 +41,10 @@ router.get('/ping', (req, res) => {
   });
 });
 
-// 🔒 JWT Token Middleware
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ success: false, message: "🔒 Token missing" });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret', (err, user) => {
-    if (err) {
-      return res.status(403).json({ success: false, message: "❌ Invalid token" });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// ✅ GET /api/owner/stats — Protected Dashboard Data
-router.get('/stats', authMiddleware, (req, res) => {
+// ✅ GET /api/owner/stats — Dashboard Analytics
+router.get('/stats', verifyToken, (req, res) => {
   try {
+    // You can replace this with real DB stats later
     const dashboardData = {
       success: true,
       orders: 120,
