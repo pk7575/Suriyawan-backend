@@ -1,16 +1,60 @@
 const mongoose = require("mongoose");
 
-const deliveryBoySchema = new mongoose.Schema({
-  name: String,
-  phone: { type: String, unique: true },
-  password: String,
-  assignedParcels: [String], // tracking IDs
-  cashCollected: { type: Number, default: 0 },
-  location: {
-    lat: Number,
-    lng: Number,
+const deliveryBoySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+
+    password: {
+      type: String,
+      required: true
+    },
+
+    assignedParcels: {
+      type: [String], // Array of tracking IDs
+      default: []
+    },
+
+    cashCollected: {
+      type: Number,
+      default: 0
+    },
+
+    location: {
+      lat: {
+        type: Number,
+        default: 0
+      },
+      lng: {
+        type: Number,
+        default: 0
+      }
+    },
+
+    status: {
+      type: String,
+      enum: ["Available", "Busy", "Offline"],
+      default: "Available"
+    },
+
+    imageUrl: {
+      type: String,
+      default: "" // For profile photo if needed
+    }
   },
-  status: { type: String, default: "Available" },
-});
+  {
+    timestamps: true // ✅ Important for tracking when delivery boy joined/updated
+  }
+);
 
 module.exports = mongoose.model("DeliveryBoy", deliveryBoySchema);
