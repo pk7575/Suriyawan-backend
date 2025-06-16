@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middlewares/authMiddleware');
+const verifyToken = require('../middlewares/verifyToken');
 
 const {
   addProduct,
@@ -14,18 +14,43 @@ const {
 } = require('../controllers/productController');
 
 
-// 🔐 Seller Routes
-router.post('/seller', verifyToken, addProduct);                       // Add Product (Seller)
-router.get('/seller', verifyToken, getSellerProducts);                // Seller's Products
-router.put('/seller/:id', verifyToken, updateProduct);                // Update Product
-router.delete('/seller/:id', verifyToken, deleteProduct);            // Delete Product
-router.patch('/seller/:id/toggle', verifyToken, toggleAvailability); // Toggle Product Availability
+// ============================
+// 📦 SELLER ROUTES (Protected)
+// ============================
 
-// 👨‍💼 Delivery Boy Routes
-router.post('/delivery/assign/:productId', verifyToken, assignProductToDelivery); // Assign delivery
-router.get('/delivery', verifyToken, getDeliveryProducts);                        // Get assigned products
+// ✅ Add a new product
+router.post('/seller', verifyToken, addProduct);
 
-// 🛒 Customer Routes
-router.get('/customer', getAllProductsForCustomer);  // Public Product List for Customers
+// ✅ Get all products uploaded by seller
+router.get('/seller', verifyToken, getSellerProducts);
+
+// ✅ Update product info
+router.put('/seller/:id', verifyToken, updateProduct);
+
+// ✅ Delete a product
+router.delete('/seller/:id', verifyToken, deleteProduct);
+
+// ✅ Toggle product availability (active/inactive)
+router.patch('/seller/:id/toggle', verifyToken, toggleAvailability);
+
+
+// ================================
+// 🚚 DELIVERY BOY ROUTES (Secure)
+// ================================
+
+// ✅ Assign product to delivery (e.g., part of run sheet)
+router.post('/delivery/assign/:productId', verifyToken, assignProductToDelivery);
+
+// ✅ Get assigned deliveries (products) for delivery boy
+router.get('/delivery', verifyToken, getDeliveryProducts);
+
+
+// ===============================
+// 🛒 CUSTOMER ROUTES (Public View)
+// ===============================
+
+// ✅ Fetch all active products for customers (shop view)
+router.get('/customer', getAllProductsForCustomer);
+
 
 module.exports = router;
