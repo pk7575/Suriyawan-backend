@@ -2,35 +2,37 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Create uploads folder if it doesn't exist
+// 🔧 Base upload directory: /uploads
 const baseDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(baseDir)) {
   fs.mkdirSync(baseDir);
 }
 
-// ✅ Dynamic folder setup based on user role
+// 📂 Dynamically create folders for roles (seller, customer, delivery)
 const getUploadPath = (role) => {
-  const dir = path.join(baseDir, role);
+  const dir = path.join(baseDir, role.toLowerCase());
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
   return dir;
 };
 
-// ✅ Storage config
+// 💾 Multer storage config
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const userRole = req.user?.role || req.body.role || 'general'; // fallback to 'general'
+  destination: (req, file, cb) => {
+    // Get role from route param, body, or user object
+    const userRole = req.params.role || req.body.role || req.user?.role || 'general';
     const uploadPath = getUploadPath(userRole);
     cb(null, uploadPath);
   },
-  filename: function (req, file, cb) {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     cb(null, uniqueName);
   }
 });
 
-// ✅ File filter (optional but safer)
+// 🔒 Optional file filter (images only)
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif|webp/;
   const ext = path.extname(file.originalname).toLowerCase();
@@ -42,12 +44,12 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// ✅ Export upload middleware
+// ✅ Export configured multer instance
 const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // Max 5MB
+    fileSize: 5 * 1024 * 1024 // Max file size = 5MB
   }
 });
 
