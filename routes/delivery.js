@@ -1,16 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const delivery = require("../controllers/deliveryController");
-const auth = require("../middleware/auth");
 
-// Public
-router.post("/register", delivery.register);
-router.post("/login", delivery.login);
+// ✅ Import Delivery Controller
+const deliveryController = require("../controllers/deliveryController");
 
-// Protected
-router.get("/assignments", auth, delivery.assignments);
-router.post("/update-status", auth, delivery.updateStatus);
-router.post("/cash", auth, delivery.updateCash);
-router.post("/location", auth, delivery.updateLocation);
+// ✅ Import DeliveryBoy Auth Middleware
+const { verifyDeliveryBoy } = require("../middlewares/auth");
+
+// 🔓 Public Routes
+router.post("/register", deliveryController.register);
+router.post("/login", deliveryController.login);
+
+// 🔐 Protected Routes (DeliveryBoy Only)
+router.get("/assignments", verifyDeliveryBoy, deliveryController.assignments);
+router.post("/update-status", verifyDeliveryBoy, deliveryController.updateStatus);
+router.post("/cash", verifyDeliveryBoy, deliveryController.updateCash);
+router.post("/location", verifyDeliveryBoy, deliveryController.updateLocation);
 
 module.exports = router;
