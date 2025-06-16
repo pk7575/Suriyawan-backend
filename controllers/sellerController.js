@@ -1,52 +1,58 @@
 const Seller = require('../models/Seller');
 const Product = require('../models/Product');
 
-// ✅ Get seller profile
+// ✅ Get Seller Profile
 exports.getSellerProfile = async (req, res) => {
   try {
     const seller = await Seller.findById(req.user.id).select('-password');
-    if (!seller) return res.status(404).json({ message: 'Seller not found' });
-
-    res.json(seller);
+    if (!seller) {
+      return res.status(404).json({ success: false, message: 'Seller not found' });
+    }
+    res.json({ success: true, seller });
   } catch (err) {
-    console.error('Error fetching seller profile:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching seller profile:', err.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-// ✅ Update seller profile
+// ✅ Update Seller Profile
 exports.updateSellerProfile = async (req, res) => {
   try {
     const updates = req.body;
-    const seller = await Seller.findByIdAndUpdate(req.user.id, updates, { new: true });
+    const updatedSeller = await Seller.findByIdAndUpdate(req.user.id, updates, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
 
-    if (!seller) return res.status(404).json({ message: 'Seller not found' });
+    if (!updatedSeller) {
+      return res.status(404).json({ success: false, message: 'Seller not found' });
+    }
 
-    res.json({ message: 'Seller profile updated', seller });
+    res.json({ success: true, message: 'Profile updated', seller: updatedSeller });
   } catch (err) {
-    console.error('Error updating seller profile:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating seller profile:', err.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-// ✅ Delete seller account
+// ✅ Delete Seller Account
 exports.deleteSeller = async (req, res) => {
   try {
     await Seller.findByIdAndDelete(req.user.id);
-    res.json({ message: 'Seller account deleted' });
+    res.json({ success: true, message: 'Seller account deleted successfully' });
   } catch (err) {
-    console.error('Error deleting seller:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error deleting seller:', err.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-// ✅ Get seller's products
+// ✅ Get Products Belonging to Seller
 exports.getSellerProducts = async (req, res) => {
   try {
     const products = await Product.find({ seller: req.user.id });
-    res.json(products);
+    res.json({ success: true, products });
   } catch (err) {
-    console.error('Error fetching products:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching seller products:', err.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
