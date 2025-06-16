@@ -1,8 +1,8 @@
-// ✅ Import core modules
+// ✅ Core Imports
 const express = require("express");
 const router = express.Router();
 
-// ✅ Import controller functions
+// ✅ Controller Functions
 const {
   loginCustomer,       // D1: Login
   logoutCustomer,      // D12: Logout
@@ -13,35 +13,30 @@ const {
   askHelpdesk          // D8–D11: Helpdesk AI Chat
 } = require("../controllers/customerController");
 
+// ✅ Middleware
+const { verifyCustomer } = require("../middlewares/auth");
+
 // ✅ D1: Customer Login
-// Route: POST /api/customer/login
 router.post("/login", loginCustomer);
 
 // ✅ D12: Customer Logout
-// Route: POST /api/customer/logout
-router.post("/logout", logoutCustomer);
+router.post("/logout", verifyCustomer, logoutCustomer);
 
-// ✅ D3: Get Customer Info
-// Route: GET /api/customer/info
-router.get("/info", getCustomerInfo);
+// ✅ D3: Get Customer Info (Secure)
+router.get("/info", verifyCustomer, getCustomerInfo);
 
-// ✅ D2: Fetch All Products
-// Route: GET /api/customer/products
+// ✅ D2: Fetch All Products (Public)
 router.get("/products", getProducts);
 
-// ✅ D5: Place a New Order
-// Route: POST /api/customer/order
-router.post("/order", placeOrder);
+// ✅ D5: Place a New Order (Only if logged in)
+router.post("/order", verifyCustomer, placeOrder);
 
-// ✅ D7: Track Order by Order ID
-// Route: GET /api/customer/track/:orderId
-router.get("/track/:orderId", trackOrder);
+// ✅ D7: Track Order by Order ID (Customer only)
+router.get("/track/:orderId", verifyCustomer, trackOrder);
 
-// ✅ D8–D11: Ask AI Helpdesk a Question
-// Route: POST /api/customer/helpdesk/ask
-router.post("/helpdesk/ask", askHelpdesk);
+// ✅ D8–D11: Ask AI Helpdesk (Secure route)
+router.post("/helpdesk/ask", verifyCustomer, askHelpdesk);
 
-// 🛠️ D13–D25: Future Routes (e.g., Wallet, Wishlist, Feedback, Complaints) to be added here
+// 🛠️ D13–D25: Wallet, Wishlist, Feedback, etc. will come here
 
-// ✅ Export Router
 module.exports = router;
