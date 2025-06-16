@@ -40,7 +40,6 @@ app.use('/api', uploadRoutes); // 🆕 upload route active
 // ✅ Serve uploaded images publicly
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // 🆕
 
-
 // ✅ Health Check
 app.get('/', (req, res) => {
   res.send('🚀 Suriyawan Saffari Backend is Working!');
