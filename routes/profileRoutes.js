@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middlewares/authMiddleware');
+const verifyToken = require('../middlewares/verifyToken');
 
+// ✅ Controllers
 const {
   sellerProfile,
   updateSeller
@@ -17,15 +18,21 @@ const {
   updateCustomer
 } = require('../controllers/customerController');
 
-// 📌 Seller Profile Routes
+// =======================
+// 🧑‍💼 SELLER PROFILE
+// =======================
 router.get('/seller', verifyToken, sellerProfile);
 router.put('/seller', verifyToken, updateSeller);
 
-// 📌 Delivery Boy Profile Routes
+// ==========================
+// 🚚 DELIVERY BOY PROFILE
+// ==========================
 router.get('/delivery', verifyToken, deliveryProfile);
 router.put('/delivery', verifyToken, updateDelivery);
 
-// 📌 Customer Profile Routes
+// =======================
+// 👤 CUSTOMER PROFILE
+// =======================
 router.get('/customer', verifyToken, customerProfile);
 router.put('/customer', verifyToken, updateCustomer);
 
