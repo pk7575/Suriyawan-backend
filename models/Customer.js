@@ -1,49 +1,49 @@
 const mongoose = require("mongoose");
 
-const customerSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
+const customerSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true
+    },
 
-  password: {
-    type: String,
-    required: true
-  },
+    password: {
+      type: String,
+      required: true
+    },
 
-  mobile: {
-    type: String,
-    required: true,
-    unique: true
-  },
+    mobile: {
+      type: String,
+      required: true,
+      unique: true
+    },
 
-  address: {
-    type: String,
-    default: ""
-  },
+    address: {
+      type: String,
+      default: ""
+    },
 
-  pincode: {
-    type: String,
-    default: ""
-  },
+    pincode: {
+      type: String,
+      default: ""
+    },
 
-  imageUrl: {
-    type: String,
-    default: "" // Profile image
+    imageUrl: {
+      type: String,
+      default: "" // Profile image
+    }
   },
-
-  createdAt: {
-    type: Date,
-    default: Date.now
+  {
+    timestamps: true // ✅ Yeh yahan hona chahiye
   }
-});
+);
 
 module.exports = mongoose.model("Customer", customerSchema);
