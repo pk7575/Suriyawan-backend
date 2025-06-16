@@ -1,3 +1,4 @@
+const Owner = require("../models/Owner");
 const Seller = require("../models/Seller");
 const Customer = require("../models/Customer");
 const DeliveryBoy = require("../models/DeliveryBoy");
@@ -11,7 +12,9 @@ exports.getProfile = async (req, res) => {
 
     let user = null;
 
-    if (userType === "seller") {
+    if (userType === "owner") {
+      user = await Owner.findById(userId).select("-password");
+    } else if (userType === "seller") {
       user = await Seller.findById(userId).select("-password");
     } else if (userType === "customer") {
       user = await Customer.findById(userId).select("-password");
@@ -51,7 +54,8 @@ exports.updateProfile = async (req, res) => {
     if (address) updates.address = address;
 
     // Model assignment based on role
-    if (userType === "seller") model = Seller;
+    if (userType === "owner") model = Owner;
+    else if (userType === "seller") model = Seller;
     else if (userType === "customer") model = Customer;
     else if (userType === "delivery") model = DeliveryBoy;
 
