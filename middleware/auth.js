@@ -3,7 +3,7 @@ const Seller = require('../models/Seller');
 const Customer = require('../models/Customer');
 const DeliveryBoy = require('../models/DeliveryBoy');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yourSecretKey'; // Use .env for production
+const JWT_SECRET = process.env.JWT_SECRET || 'suriyawan1Super2SecretKey77'; // safe fallback
 
 // 🔐 Middleware for Seller
 const verifySeller = async (req, res, next) => {
