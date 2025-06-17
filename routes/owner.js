@@ -58,4 +58,9 @@ router.get('/stats', verifyToken, (req, res) => {
   }
 });
 
+// ✅ GET /api/owner/verify — Token Verify for Frontend AuthGuard
+router.get('/verify', verifyToken, (req, res) => {
+  res.json({ success: true, message: "✅ Token valid" });
+});
+
 module.exports = router;
