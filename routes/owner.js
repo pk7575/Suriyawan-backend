@@ -6,7 +6,7 @@ const verifyToken = require('../middlewares/verifyToken');
 // 🧑‍💼 Dummy Owner Credentials (can move to DB later)
 const DUMMY_OWNER = {
   username: 'pradeepseth646',
-  password: '6cmi97KP9MDBzr7' // ✅ Static Auth Password
+  password: 'gss626hPgeehghx56' // ✅ Static Auth Password
 };
 
 // ✅ POST /api/owner/login — Owner Login
