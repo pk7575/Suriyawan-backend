@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 // 🔐 Use ENV for real credentials
 const OWNER_USERNAME = process.env.OWNER_USERNAME || "pradeepseth646";
-const OWNER_PASSWORD = process.env.OWNER_PASSWORD || "6cmi97KP9MDHBzr7";
+const OWNER_PASSWORD = process.env.OWNER_PASSWORD || "gss626hPgeehghx56";
 const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
 
 // ✅ Owner Login
